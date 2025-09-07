@@ -1,0 +1,54 @@
+import heapq
+
+# A* Search Algorithm
+def a_star_search(grid, start, goal):
+    rows, cols = len(grid), len(grid[0])
+    
+    # Heuristic: Manhattan distance
+    def heuristic(a, b):
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+    
+    # Priority queue: (cost + heuristic, cost, path)
+    queue = [(heuristic(start, goal), 0, [start])]
+    visited = set()
+    
+    while queue:
+        est_total_cost, cost, path = heapq.heappop(queue)
+        node = path[-1]
+        
+        if node == goal:
+            return cost, path
+        
+        if node in visited:
+            continue
+        visited.add(node)
+        
+        # Explore 4 directions (up, down, left, right)
+        for dx, dy in [(-1,0),(1,0),(0,-1),(0,1)]:
+            x, y = node[0] + dx, node[1] + dy
+            if 0 <= x < rows and 0 <= y < cols and grid[x][y] == 0:
+                new_cost = cost + 1
+                new_path = list(path)
+                new_path.append((x, y))
+                priority = new_cost + heuristic((x, y), goal)
+                heapq.heappush(queue, (priority, new_cost, new_path))
+    
+    return float("inf"), []
+
+
+# Example Grid (0 = free cell, 1 = obstacle)
+grid = [
+    [0,0,0,0,0],
+    [1,1,0,1,0],
+    [0,0,0,1,0],
+    [0,1,1,1,0],
+    [0,0,0,0,0]
+]
+
+start = (0,0)   # Top-left corner
+goal = (4,4)    # Bottom-right corner
+
+cost, path = a_star_search(grid, start, goal)
+
+print("🤖 Shortest path found by A*:", path)
+print("📏 Path length:", cost)
