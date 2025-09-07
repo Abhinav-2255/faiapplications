@@ -1,0 +1,41 @@
+from collections import deque
+
+def bfs_connection(network, start, target):
+    visited = set()
+    queue = deque([[start]])  # store paths
+
+    if start == target:
+        return [start]
+
+    while queue:
+        path = queue.popleft()
+        person = path[-1]
+
+        if person not in visited:
+            for friend in network.get(person, []):
+                new_path = list(path)
+                new_path.append(friend)
+                queue.append(new_path)
+
+                if friend == target:
+                    return new_path
+            visited.add(person)
+    return None
+
+
+# Example social network graph
+social_network = {
+    "Alice": ["Bob", "Charlie"],
+    "Bob": ["Alice", "David", "Eve"],
+    "Charlie": ["Alice", "Fay"],
+    "David": ["Bob", "Grace"],
+    "Eve": ["Bob", "Grace"],
+    "Fay": ["Charlie", "Grace"],
+    "Grace": ["David", "Eve", "Fay", "Helen"],
+    "Helen": ["Grace"]
+}
+
+# Find shortest connection between two people
+path = bfs_connection(social_network, "Alice", "Helen")
+
+print("👥 Shortest connection from Alice to Helen:", " → ".join(path))
