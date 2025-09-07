@@ -1,0 +1,41 @@
+import heapq
+
+def uniform_cost_search(graph, start, goal):
+    # Priority queue (min-heap): (cost, path)
+    queue = [(0, [start])]
+    visited = set()
+
+    while queue:
+        cost, path = heapq.heappop(queue)
+        node = path[-1]
+
+        if node == goal:
+            return cost, path
+
+        if node not in visited:
+            visited.add(node)
+
+            for neighbour, edge_cost in graph.get(node, []):
+                new_cost = cost + edge_cost
+                new_path = list(path)
+                new_path.append(neighbour)
+                heapq.heappush(queue, (new_cost, new_path))
+
+    return float("inf"), []
+
+
+# Example flight network (graph)
+# Format: "City": [(NeighbouringCity, Cost), ...]
+flight_graph = {
+    "Mumbai": [("Delhi", 7000), ("Bangalore", 3000)],
+    "Delhi": [("Kolkata", 4000), ("Dubai", 15000)],
+    "Bangalore": [("Kolkata", 5000), ("Dubai", 10000)],
+    "Kolkata": [("Dubai", 7000)],
+    "Dubai": []
+}
+
+# Find cheapest route from Mumbai to Dubai
+cost, path = uniform_cost_search(flight_graph, "Mumbai", "Dubai")
+
+print("✈ Cheapest route:", " → ".join(path))
+print("💰 Total cost:", cost)
